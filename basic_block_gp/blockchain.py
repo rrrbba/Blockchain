@@ -33,7 +33,7 @@ class Blockchain(object):
         block = {
             'index': len(self.chain) +1,
             'timestamp': time(),
-            'transactions': self.transactions,
+            'transactions': self.current_transactions,
             'proof': proof, 
             'previous_hash': previous_hash or self.hash(self.last_block) #or self.hash(self.chain[-1])
         }
@@ -139,7 +139,9 @@ def mine():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        'message': 'hello'
+        #Return the chain and it's current length
+        'chain': blockchain.chain,
+        'length': len(blockchain.chain)
     }
     return jsonify(response), 200
 
