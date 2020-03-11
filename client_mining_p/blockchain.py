@@ -128,20 +128,20 @@ def mine():
             return jsonify(response), 400
     else:
         #check if the proof is valid, use proof_of_work
-        block_string = json.dumps(block, sort_keys = True)
+        block_string = json.dumps(blockchain.last_block, sort_keys = True)
 
         #only the first miner should get a valid proof, everyone else fails
         miner_p = data['proof']
 
         #run the check
-        if blockchain.valid_proof(block_string, miner_p):
+        if blockchain.valid_proof(block_string, miner_p ):
             # Forge the new Block by adding it to the chain with the proof
             previous_hash = blockchain.hash(blockchain.last_block)
-            block = blockchain.new_block(miner_p, previous_hash)
+            new_block = blockchain.new_block(miner_p, previous_hash)
             response = {
                 #Send a JSON response with the new block
-                'message': 'You made a new block, congratulations!'
-                'block': block
+                'message': 'New Block Forged',
+           
             }
             return jsonify(response), 200
         else:
@@ -160,7 +160,7 @@ def full_chain():
     }
     return jsonify(response), 200
 
-@app.route('/lastblock', methods = ['GET'])
+@app.route('/last_block', methods = ['GET'])
 def last():
     response = {
         #Return last block of chain
