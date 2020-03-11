@@ -31,13 +31,19 @@ class Blockchain(object):
         """
 
         block = {
-            # TODO
+            'index': len(self.chain) +1,
+            'timestamp': time(),
+            'transactions': self.transactions,
+            'proof': proof, 
+            'previous_hash': previous_hash or self.hash(self.last_block) #or self.hash(self.chain[-1])
         }
 
         # Reset the current list of transactions
-        # Append the chain to the block
+        self.current_transactions = []
+        # Append the block to the chain
+        self.chain.append(block)
         # Return the new block
-        pass
+        return block
 
     def hash(self, block):
         """
@@ -47,28 +53,34 @@ class Blockchain(object):
         "return": <str>
         """
 
-        # Use json.dumps to convert json into a string
+        # Use json.dumps to convert json into a string (like stringify)
+        string_block = json.dumps(block, sort_keys= true) #sortkeys makes sure all the keys in dict are strings in abc ordr so hash isn't different and same order every time
+
         # Use hashlib.sha256 to create a hash
         # It requires a `bytes-like` object, which is what
         # .encode() does.
+        raw_hash = hashlib.sha256(string_block.encode()) #.encode turns it into a string string
+
         # It converts the Python string into a byte string.
         # We must make sure that the Dictionary is Ordered,
         # or we'll have inconsistent hashes
+        
 
-        # TODO: Create the block_string
+        # TODO: Create the block_string --> line 57
 
-        # TODO: Hash this string using sha256
+        # TODO: Hash this string using sha256 --> line 62
 
         # By itself, the sha256 function returns the hash in a raw string
         # that will likely include escaped characters.
         # This can be hard to read, but .hexdigest() converts the
         # hash to a string of hexadecimal characters, which is
         # easier to work with and understand
+        hex_hash = raw_hash.hexdigest()
 
         # TODO: Return the hashed block string in hexadecimal format
-        pass
+        return hex_hash
 
-    @property
+    @property #decorator function, don't have to use () can use it outside of the class
     def last_block(self):
         return self.chain[-1]
 
@@ -127,7 +139,7 @@ def mine():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        # TODO: Return the chain and its current length
+        'message': 'hello'
     }
     return jsonify(response), 200
 
