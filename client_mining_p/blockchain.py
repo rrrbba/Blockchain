@@ -123,14 +123,32 @@ def mine():
     for info in user_info:
         if info not in data:
             response = {
-                'Message': 'Sorry, you need a proof and id to continue!'
+                'message': 'Sorry, you need a proof and id to continue!'
             }
-    response = {
-        #Send a JSON response with the new block
-        'new_block': block
-    }
+            return jsonify(response), 400
+    else:
+        #check if the proof is valid, use proof_of_work
+        block_string = json.dumps(block, sort_keys = True)
 
-    return jsonify(response), 200
+        #only the first miner should get a valid proof, everyone else fails
+        miner_p = data['proof']
+
+        #run the check
+        if blockchain.valid_proof(block_string, miner_p):
+            # Forge the new Block by adding it to the chain with the proof
+            previous_hash = blockchain.hash(blockchain.last_block)
+            block = blockchain.new_block(miner_p, previous_hash)
+            response = {
+                #Send a JSON response with the new block
+                'message': 'You made a new block, congratulations!'
+                'block': block
+            }
+            return jsonify(response), 200
+        else:
+            response = {
+                'message': 'Sorry, someone beat you to it. Try again!'
+            }
+            return jsonify(response), 400
 
 
 @app.route('/chain', methods=['GET'])
